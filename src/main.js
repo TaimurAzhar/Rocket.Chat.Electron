@@ -6,6 +6,16 @@ import rimraf from 'rimraf';
 
 import { setupErrorHandling } from './errorHandling';
 
+export const DOWNLOAD_EVENTS = {
+	COMPLETE: 'download-complete',
+	LOAD: 'load-downloads',
+	INITIALIZE: 'intialize-downloads',
+	REMOVE: 'remove',
+	CREATE: 'create-download',
+	DOWNLOADING_ID: 'downloading-',
+	COMPLETE_ID: 'download-complete-',
+	RESET: 'reset',
+};
 
 const Store = require('electron-store');
 
@@ -103,7 +113,7 @@ const createMainWindow = () => {
 	// store.clear();
 
 	// Load all downloads from LocalStorage into Main Process and send to Download Manager.
-	ipcMain.on('load-downloads', async () => {
+	ipcMain.on(DOWNLOAD_EVENTS.LOAD, async () => {
 		console.log('Loading Downloads');
 		const downloads = await store.get('downloads', {});
 		mainWindow.webContents.send('initialize-downloads', downloads);
@@ -131,7 +141,6 @@ const createMainWindow = () => {
 	});
 	// Downloads handler. Handles all downloads from links.
 	mainWindow.webContents.session.on('will-download', async (event, item, webContents) => {
-		// item.pause();
 		// console.log({ event, item, webContents });
 		const mime = item.getMimeType();
 		let paused = false;

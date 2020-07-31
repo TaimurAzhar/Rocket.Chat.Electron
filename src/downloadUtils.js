@@ -1,3 +1,15 @@
+
+import { Box, Button } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
+import { Progress as SweetProgress } from 'react-sweet-progress';
+import 'react-sweet-progress/lib/style.css';
+
+export const Info = (props) => <Box fontSize='s1' color='info' {...props}/>;
+
+export const ActionButton = (props) => <Button color='primary-500' small ghost {...props}/>;
+
+export const Progress = ({ percent, ...props }) => <Box flexGrow={1} {...props}><SweetProgress theme={ useMemo(() => ({ default: { color: '#2F80ED' } }), []) } percent={ percent } status='default' /> </Box>;
+
 // Utility function for bytes conversion. TODO: seperate into another file.
 export function formatBytes(bytes, decimals = 2, size = false) {
 	if (bytes === 0) {
@@ -16,10 +28,27 @@ export function formatBytes(bytes, decimals = 2, size = false) {
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
 }
 
+export const STATUS = {
+	CANCELLED: 'Cancelled',
+	PAUSED: 'Paused',
+	ALL: 'All Downloads',
+};
+
 //  Filetype to Mimetype mapping
-export const mapping = {
+export const MIMES = {
 	application: 'Files',
 	image: 'Images',
 	video: 'Videos',
 	audio: 'Audios',
+};
+
+export const DOWNLOAD_EVENTS = {
+	COMPLETE: 'download-complete',
+	LOAD: 'load-downloads',
+	INITIALIZE: 'intialize-downloads',
+	REMOVE: 'remove',
+	CREATE: 'create-download',
+	DOWNLOADING_ID: 'downloading-',
+	COMPLETE_ID: 'download-complete-',
+	RESET: 'reset',
 };
