@@ -25,7 +25,6 @@ export default function DownloadItem({
 	fileSize = formatBytes(totalBytes, 2, true),
 	...props
 }) {
-	// console.log(props);
 	const servers = useSelector(({ servers }) => servers);
 
 	const [percentage, setPercentage] = useDebouncedState(props.percentage || 0, 100);
@@ -43,15 +42,12 @@ export default function DownloadItem({
 
 
 	const handleProgress = useMutableCallback((event, data) => {
-		console.log('Progress');
-		// console.log(` Current Bytes: ${ bytes }`);
 		const percentage = Math.floor((data.bytes / totalBytes) * 100);
 		updateDownloads({ status: STATUS.All, percentage, serverTitle, itemId, Mbps: data.Mbps });
 		setPercentage(percentage);
 		setPath(data.savePath);
 	});
 
-	// TODO: Convert to only recieve dynamic progressed bytes data. NEED TO THROTTLE
 	useEffect(() => {
 		// Listen on unique event only
 		ipcRenderer.on(`downloading-${ itemId }`, handleProgress);
@@ -64,7 +60,6 @@ export default function DownloadItem({
 	// Download Completed, Send data back
 	useEffect(() => {
 		const downloadComplete = (data) => {
-			console.log('Download Complete');
 			setStatus(STATUS.All);
 			updateDownloads({ status: STATUS.All, serverTitle, itemId, percentage: 100 });
 			ipcRenderer.send(DOWNLOAD_EVENTS.COMPLETE, { status: STATUS.ALL, url, fileName, fileSize, percentage: 100, serverTitle, itemId, date, path: data.path, mime });
@@ -84,7 +79,6 @@ export default function DownloadItem({
 	});
 
 	const handlePause = useMutableCallback(() => {
-		console.log(percentage);
 		setStatus(STATUS.PAUSED);
 		ipcRenderer.send(`pause-${ itemId }`);
 		updateDownloads({ status: STATUS.PAUSED, percentage, itemId });

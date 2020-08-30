@@ -98,7 +98,6 @@ const createMainWindow = () => {
 
 	mainWindow.addListener('close', async (e) => {
 		preventEvent(e);
-		console.log('closing');
 	});
 
 	mainWindow.webContents.addListener('will-attach-webview', (event, webPreferences) => {
@@ -108,26 +107,20 @@ const createMainWindow = () => {
 	mainWindow.loadFile(`${ app.getAppPath() }/app/public/app.html`);
 
 
-	// Logs and Helpers
-	console.log(store.get('downloads', {}));
-	// store.clear();
 
 	// Load all downloads from LocalStorage into Main Process and send to Download Manager.
 	ipcMain.on(DOWNLOAD_EVENTS.LOAD, async () => {
-		console.log('Loading Downloads');
 		const downloads = await store.get('downloads', {});
 		mainWindow.webContents.send('initialize-downloads', downloads);
 	});
 
 	ipcMain.on('reset', async () => {
-		console.log('Reset');
 		await store.clear();
 		const downloads = await store.get('downloads', {});
 		mainWindow.webContents.send('initialize-downloads', downloads);
 	});
 
 	ipcMain.on('remove', async (event, itemdId) => {
-		console.log(`Removing: ${ itemdId } `);
 		await store.delete(`downloads.${ itemdId }`);
 	});
 
@@ -136,24 +129,20 @@ const createMainWindow = () => {
 	ipcMain.on('download-complete', async (event, downloadItem) => {
 		const downloads = await store.get('downloads', {});
 		downloads[downloadItem.itemId] = downloadItem;
-		// console.log(downloads);
 		store.set('downloads', downloads);
 	});
 	// Downloads handler. Handles all downloads from links.
 	mainWindow.webContents.session.on('will-download', async (event, item, webContents) => {
-		// console.log({ event, item, webContents });
 		const mime = item.getMimeType();
 		let paused = false;
 		const itemId = Date.now();
 		const url = item.getURLChain()[0];
 		const serverTitle = url.split('#')[1];
-		console.log(url);
 		mainWindow.webContents.send('create-download-item', { status: 'All Downloads', serverTitle, itemId, totalBytes: item.getTotalBytes(), fileName: item.getFilename(), url, serverId: webContents.id, mime }); // Request download item creation in UI and send unqiue ID.
 		let startTime = new Date().getTime();
 		let endTime;
 		let bytesRecieved;
 		// Cancelled Download
-		console.log(item.getURLChain());
 		ipcMain.on(`cancel-${ itemId }`, () => item.cancel());
 
 		// Paused Download
@@ -181,7 +170,6 @@ const createMainWindow = () => {
 
 					// Sending Download Information. TODO: Seperate bytes as information sent is being repeated.
 					mainWindow.webContents.send(`downloading-${ itemId }`, { bytes: bytesRecieved, savePath: item.getSavePath(), Mbps });
-					console.log(`Received bytes: ${ item.getReceivedBytes() }`);
 				}
 			}
 		});

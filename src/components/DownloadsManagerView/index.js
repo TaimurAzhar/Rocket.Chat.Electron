@@ -30,12 +30,10 @@ export function DownloadsManagerView() {
 	let timeHeading;
 
 	const handleFileOpen = useMutableCallback((path) => {
-		// console.log(path);
 		shell.showItemInFolder(path);
 	});
 
 	const handleTabChange = useMutableCallback((event) => {
-		// console.log(event.target.innerText);
 		if (event.target.innerText !== tab) {
 			setTab(event.target.innerText);
 		}
@@ -51,21 +49,18 @@ export function DownloadsManagerView() {
 
 
 	const handleSearch = useMutableCallback((event) => {
-		// console.log(Boolean(event.target.value));
 		if (event.target.value !== searchVal) {
 			setSearchVal(event.target.value);
 		}
 	});
 
 	const handleServerFilter = useMutableCallback((index) => {
-		console.log(index);
 		if (serverOptions[index - 1][1] !== serverVal) {
 			setServerVal(serverOptions[index - 1][1]);
 		}
 	});
 
 	const handleMimeFilter = useMutableCallback((index) => {
-		console.log(index);
 		if (fileTypes[index - 1][1] !== typeVal) {
 			setTypeVal(fileTypes[index - 1][1]);
 		}
@@ -73,7 +68,6 @@ export function DownloadsManagerView() {
 
 
 	const updateDownloads = useMutableCallback((data) => {
-		console.log(data);
 		const updatedDownloads = downloads.map((downloadItem) => {
 			if (downloadItem.itemId === data.itemId) {
 				for (const key of Object.keys(data)) {
@@ -132,14 +126,12 @@ export function DownloadsManagerView() {
 	// 			USE EFFECTS
 
 	useEffect(() => {
-		console.log('Loading Downloads');
 		ipcRenderer.send(DOWNLOAD_EVENTS.LOAD);
 	}, []);
 
 	useEffect(() => {
 		const intializeDownloads = (event, downloads) => {
 			setDownloads(Object.values(downloads));
-			console.log(Object.values(downloads));
 		};
 		ipcRenderer.on(DOWNLOAD_EVENTS.INITIALIZE, intializeDownloads);
 		return () => {
@@ -149,8 +141,6 @@ export function DownloadsManagerView() {
 
 	useEffect(() => {
 		const createDownload = (event, props) => {
-			console.log('Creating New Download');
-			console.log(props);
 			const updatedDownloads = [...downloads];
 			updatedDownloads.push(props);
 			setDownloads(updatedDownloads);
